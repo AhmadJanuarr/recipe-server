@@ -7,4 +7,5 @@ const router = express.Router();
 router.get("/admin/users",);
 router.post("/login", validateLogin, Login);
 router.post("/signup", validateSignup, Signup);
+router.get("/recipes",)
 export default router
