@@ -49,8 +49,8 @@ Backend API untuk sistem manajemen resep makanan, dibangun menggunakan **Express
 
 | Metho  |      Endpoint      |                    Description |
 | :----- | :----------------: | -----------------------------: |
-| POST   | `/api/auth/signup` |        Mendaftar pengguna baru |
-| POST   | `/api/auth/login`  |                 Login pengguna |
+| POST   |   `/api/signup`    |        Mendaftar pengguna baru |
+| POST   |    `/api/login`    |                 Login pengguna |
 | GET    |   `/api/recipes`   | Mendapatkan daftar semua resep |
 | POST   |   `/api/recipes`   |         Menambahkan resep baru |
 | PUT    | `/api/recipes/:id` |  Mengedit resep berdasarkan ID |
@@ -61,8 +61,8 @@ Backend API untuk sistem manajemen resep makanan, dibangun menggunakan **Express
 1. Clone repo ini dan masuk ke dalam direktori:
 
 ```bash
-git clone https://github.com/username/recipe-management-backend.git
-cd recipe-management-backend
+git clone https://github.com/AhmadJanuarr/recipe-server.git
+cd recipe-server
 ```
 
 2. Install dependencies:
