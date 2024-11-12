@@ -1,10 +1,108 @@
 import { prisma } from "../../prisma/client/prisma";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 export const GetRecipes = async (req: Request, res: Response) => {
-    const recipes = await prisma.recipe.findMany({
-        include: {
-            ingredients: true
-        }
-    });
+    try {
+        const recipes = await prisma.recipe.findMany();
+        res.json({
+            success: true,
+            message: "Berhasil mengambil resep",
+            data: recipes
+        });
+
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: "Gagal mengambil resep",
+            data: error.message
+        });
+    }
 }
+export const CreateRecipe = async (req: Request, res: Response) => {
+    const { title, description, ingredients, steps, imageUrl } = req.body;
+
+    if (!title || !description || !ingredients || !steps || !imageUrl) {
+        res.status(400).json({
+            success: false,
+            message: "Semua field harus diisi"
+        })
+    }
+    try {
+        const newRecipe = await prisma.recipe.create({
+            data: {
+                title,
+                description,
+                imageUrl,
+                ingredients: { create: ingredients.map((ingredient: string) => ({ name: ingredient })) },
+                steps: { create: steps.map((step: string) => ({ name: step })) }
+            },
+            include: {
+                ingredients: true,
+                steps: true
+            }
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "Resep berhasil dibuat",
+            data: newRecipe
+        });
+    } catch (error: any) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Gagal membuat resep",
+            data: error.message
+        })
+    }
+}
+
+export const UpdateRecipe = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { title, description, ingredients, steps, imageUrl } = req.body;
+
+    try {
+        const updatedRecipe = await prisma.recipe.update({
+            where: { id: Number(id) },
+            data: {
+                title,
+                description,
+                ingredients,
+                steps,
+                imageUrl,
+            }
+        });
+        res.json({
+            success: true,
+            message: "Resep berhasil diperbarui",
+            data: updatedRecipe
+        });
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: "Gagal memperbarui resep",
+            data: error.message
+        });
+    }
+};
+
+
+export const DeleteRecipe = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        await prisma.recipe.delete({
+            where: { id: Number(id) }
+        })
+        res.status(204).json({
+            success: true,
+            message: "Resep berhasil dihapus"
+        });
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: "Gagal menghapus resep",
+            msg: error.message
+        });
+    }
+};
