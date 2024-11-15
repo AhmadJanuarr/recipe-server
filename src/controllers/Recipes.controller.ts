@@ -19,22 +19,31 @@ export const GetRecipes = async (req: Request, res: Response) => {
     }
 }
 export const CreateRecipe = async (req: Request, res: Response) => {
-    const { title, description, ingredients, steps, imageUrl } = req.body;
-
-    if (!title || !description || !ingredients || !steps || !imageUrl) {
+    const { title, description, ingredients, steps, category } = req.body;
+    const image = req.file?.path;
+    if (!title || !description || !ingredients || !steps || !category || !image) {
         res.status(400).json({
             success: false,
             message: "Semua field harus diisi"
         })
+        return
+    }
+    if (!req.file) {
+        res.status(422).json({
+            success: false,
+            message: "Gambar resep harus diisi"
+        })
+        return
     }
     try {
         const newRecipe = await prisma.recipe.create({
             data: {
                 title,
                 description,
-                imageUrl,
+                image,
+                category,
                 ingredients: { create: ingredients.map((ingredient: string) => ({ name: ingredient })) },
-                steps: { create: steps.map((step: string) => ({ name: step })) }
+                steps: { create: steps.map((step: string) => ({ name: step })) },
             },
             include: {
                 ingredients: true,
@@ -59,7 +68,8 @@ export const CreateRecipe = async (req: Request, res: Response) => {
 
 export const UpdateRecipe = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { title, description, ingredients, steps, imageUrl } = req.body;
+    const { title, description, ingredients, steps } = req.body;
+    const image = req.file?.path;
 
     try {
         const updatedRecipe = await prisma.recipe.update({
@@ -69,7 +79,7 @@ export const UpdateRecipe = async (req: Request, res: Response) => {
                 description,
                 ingredients,
                 steps,
-                imageUrl,
+                image,
             }
         });
         res.json({
@@ -85,7 +95,6 @@ export const UpdateRecipe = async (req: Request, res: Response) => {
         });
     }
 };
-
 
 export const DeleteRecipe = async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -106,3 +115,37 @@ export const DeleteRecipe = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+export const GetRecipeById = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const byId = await prisma.recipe.findUnique({
+            where: { id: Number(id) },
+            include: {
+                ingredients: true,
+                steps: true
+            }
+        });
+        if (!byId) {
+            res.status(404).json({
+                success: false,
+                message: "Resep tidak ditemukan"
+            })
+            return
+        }
+        res.json({
+            success: true,
+            message: "Resep berhasil ditemukan",
+            data: byId
+        });
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: "Gagal menemukan resep",
+            msg: error.message
+        });
+    }
+}
+
+
