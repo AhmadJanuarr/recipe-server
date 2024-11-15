@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { prisma } from "../../prisma/client/prisma";
 import { Request, Response } from "express";
 
-export const Signup = async (req: Request, res: Response): Promise<void> => {
+export const Register = async (req: Request, res: Response): Promise<void> => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -35,12 +35,12 @@ export const Signup = async (req: Request, res: Response): Promise<void> => {
                 createdAt: new Date()
             }
         });
-
         res.status(201).send({
             success: true,
             message: "User created successfully",
             data: user
         });
+
     } catch (error) {
         console.error("Signup error:", error);
         res.status(500).send({
