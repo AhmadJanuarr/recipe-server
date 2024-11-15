@@ -30,7 +30,6 @@ Backend API untuk sistem manajemen resep makanan, dibangun menggunakan **Express
 ├── src
 │   ├── controllers       # Controller untuk menangani request
 │   ├── middleware        # Middleware untuk autentikasi dan otorisasi
-│   ├── models
 │   ├── routes            # Definisi endpoint
 │   └── utils             # Fungsi utility
 ├── .env                  # Variabel lingkungan
@@ -45,16 +44,22 @@ Backend API untuk sistem manajemen resep makanan, dibangun menggunakan **Express
 - **Node.js** v16 ke atas
 - **MySQL** server
 
-## Endpoint Utama
+## API Endpoints
 
-| Metho  |      Endpoint      |                    Description |
-| :----- | :----------------: | -----------------------------: |
-| POST   |   `/api/signup`    |        Mendaftar pengguna baru |
-| POST   |    `/api/login`    |                 Login pengguna |
-| GET    |   `/api/recipes`   | Mendapatkan daftar semua resep |
-| POST   |   `/api/recipes`   |         Menambahkan resep baru |
-| PUT    | `/api/recipes/:id` |  Mengedit resep berdasarkan ID |
-| DELETE | `/api/recipes/:id` | Menghapus resep berdasarkan ID |
+<p>Daftar rute yang tersedia: </p>
+
+| Metho  |          Endpoint           |                    Description |
+| :----- | :-------------------------: | -----------------------------: |
+| POST   |     `/api/auth/signup`      |        Mendaftar pengguna baru |
+| POST   |      `/api/auth/login`      |                 Login pengguna |
+| POST   |     `/api/auth/logout`      |                         Logout |
+| POST   |     `/api/auth/profile`     |                 Update Profile |
+| POST   | `/api/auth/forgot-passowrd` |                 Reset Password |
+| GET    |       `/api/recipes`        | Mendapatkan daftar semua resep |
+| POST   |       `/api/recipes`        |         Menambahkan resep baru |
+| PUT    |     `/api/recipes/:id`      |  Mengedit resep berdasarkan ID |
+| DELETE |     `/api/recipes/:id`      | Menghapus resep berdasarkan ID |
+| DELETE |     `/api/recipes/:id`      | Menghapus resep berdasarkan ID |
 
 ## Instalasi
 
