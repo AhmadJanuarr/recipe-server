@@ -20,7 +20,7 @@ export const GetRecipes = async (req: Request, res: Response) => {
 }
 export const CreateRecipe = async (req: Request, res: Response) => {
     const { title, description, ingredients, steps, category } = req.body;
-    const image = req.file?.path;
+    const image = req.file?.filename;
     if (!title || !description || !ingredients || !steps || !category || !image) {
         res.status(400).json({
             success: false,
