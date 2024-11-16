@@ -1,12 +1,13 @@
 import multer from "multer";
 import { Request, Response } from "express";
+import path from "path";
 
 export const fileStorage = multer.diskStorage({
   destination: function (req: Request, file: any, callback: any) {
     callback(null, "public/images");
   },
   filename: function (req: Request, file: any, callback: any) {
-    callback(null, Date.now() + "-" + file.originalname);
+    callback(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
   },
 });
 
