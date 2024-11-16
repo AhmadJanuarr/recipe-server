@@ -17,6 +17,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   res.header("Access-Control-Allow-Headers", "Content-Type");
   next();
 })
+app.use(express.static("public"));
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
