@@ -51,8 +51,8 @@ Backend API untuk sistem manajemen resep makanan, dibangun menggunakan **Express
 | Metho  |          Endpoint           |                    Description |
 | :----- | :-------------------------: | -----------------------------: |
 | POST   |     `/api/auth/signup`      |        Mendaftar pengguna baru |
-| POST   |      `/api/auth/login`      |                 Login pengguna |
-| POST   |     `/api/auth/logout`      |                         Logout |
+| POST   |     `/api/auth/signin`      |                 Login pengguna |
+| POST   |     `/api/auth/signout`     |                         Logout |
 | POST   |     `/api/auth/profile`     |                 Update Profile |
 | POST   | `/api/auth/forgot-passowrd` |                 Reset Password |
 | GET    |       `/api/recipes`        | Mendapatkan daftar semua resep |
