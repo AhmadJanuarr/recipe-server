@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 export const GetRecipes = async (req: Request, res: Response) => {
     try {
         const recipes = await prisma.recipe.findMany();
-        res.json({
+        res.status(200).json({
             success: true,
             message: "Berhasil mengambil resep",
             data: recipes
@@ -82,7 +82,7 @@ export const UpdateRecipe = async (req: Request, res: Response) => {
                 image,
             }
         });
-        res.json({
+        res.status(201).json({
             success: true,
             message: "Resep berhasil diperbarui",
             data: updatedRecipe
@@ -134,7 +134,7 @@ export const GetRecipeById = async (req: Request, res: Response) => {
             })
             return
         }
-        res.json({
+        res.status(200).json({
             success: true,
             message: "Resep berhasil ditemukan",
             data: byId

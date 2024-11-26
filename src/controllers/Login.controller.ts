@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../prisma/client/prisma";
 import { validationResult } from "express-validator";
 
-export const Login = async (req: Request, res: Response,): Promise<void> => {
+export const Login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body || {};
 
     // handle empty email and password
@@ -13,7 +13,7 @@ export const Login = async (req: Request, res: Response,): Promise<void> => {
             success: false,
             message: "Email dan kata sandi diperlukan"
         });
-        return
+        return;
     }
 
     // handle empty email and password
@@ -61,7 +61,7 @@ export const Login = async (req: Request, res: Response,): Promise<void> => {
         const token = jwt.sign({ userId: user!.id }, process.env.JWT_SECRET! as string, {
             expiresIn: "1h"
         });
-        res.json({
+        res.status(200).json({
             success: true,
             statusCode: 200,
             message: "Login Berhasil",
