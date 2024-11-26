@@ -14,11 +14,10 @@ router.post("/auth/logout", LogoutUser);
 // auth admin routes
 router.get("/admin/users",);
 
-// recipe routes
+// recipe routes 
 router.get("/recipes", GetRecipes);
 router.get("/recipes/:id", GetRecipeById);
 router.post("/recipes", CreateRecipe);
 router.put("/recipes/:id", UpdateRecipe);
-
 router.delete("/recipes/:id", DeleteRecipe);
-export default router
+export default router 
