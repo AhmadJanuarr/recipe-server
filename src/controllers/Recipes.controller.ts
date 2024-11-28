@@ -3,7 +3,12 @@ import { NextFunction, Request, Response } from "express";
 
 export const GetRecipes = async (req: Request, res: Response) => {
     try {
-        const recipes = await prisma.recipe.findMany();
+        const recipes = await prisma.recipe.findMany({
+            include: {
+                ingredients: true,
+                steps: true
+            }
+        });
         res.status(200).json({
             success: true,
             message: "Berhasil mengambil resep",
@@ -19,15 +24,26 @@ export const GetRecipes = async (req: Request, res: Response) => {
     }
 }
 export const CreateRecipe = async (req: Request, res: Response) => {
-    const { title, description, ingredients, steps, category } = req.body;
+    const { title, description, category } = req.body;
     const image = req.file?.filename;
-    if (!title || !description || !ingredients || !steps || !category || !image) {
-        res.status(400).json({
+    console.log(req.body)
+    console.log(req.file)
+    let ingredients : string [] = []
+    let steps : string [] = []
+
+    try{
+        ingredients = JSON.parse(req.body.ingredients)
+        steps = JSON.parse(req.body.steps)
+    }catch (error: any) {
+        console.error(error);
+        res.status(500).json({
             success: false,
-            message: "Semua field harus diisi"
-        })
-        return
+            message: "Ingredients dan steps harus berupa array valid.",
+            data: error.message
+        });
+        return;
     }
+    
     if (!req.file) {
         res.status(422).json({
             success: false,
@@ -35,6 +51,16 @@ export const CreateRecipe = async (req: Request, res: Response) => {
         })
         return
     }
+    if (!title || !description || !ingredients || !steps || !category) {
+        res.status(400).json({
+            success: false,
+            message: "Semua field harus diisi"
+        })
+        return
+    }   
+
+
+
     try {
         const newRecipe = await prisma.recipe.create({
             data: {
