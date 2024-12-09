@@ -95,7 +95,7 @@ export const CreateRecipe = async (req: Request, res: Response) => {
 export const UpdateRecipe = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { title, description, ingredients, steps } = req.body;
-    const image = req.file?.path;
+    const image = req.file?.filename;
 
     try {
         const updatedRecipe = await prisma.recipe.update({
