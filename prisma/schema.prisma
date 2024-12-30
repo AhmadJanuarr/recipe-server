@@ -8,15 +8,16 @@ generator client {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  name      String    @db.VarChar(255)
-  email     String    @unique
-  password  String
-  role      Role      @default(USER)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime
-  favorite  Favorite?
-  recipes   Recipe[]
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(255)
+  email        String         @unique
+  password     String
+  role         Role           @default(USER)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  favorite     Favorite?
+  recipes      Recipe[]
+  RefreshToken RefreshToken[]
 }
 
 enum Role {
@@ -66,4 +67,15 @@ model Favorite {
   recipeId Int
   user     User   @relation(fields: [userId], references: [id])
   recipe   Recipe @relation(fields: [recipeId], references: [id])
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  hashToken String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  expiresAt DateTime
 }
