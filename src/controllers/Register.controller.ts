@@ -1,6 +1,10 @@
 import bcrypt from "bcrypt";
 import { prisma } from "../../prisma/client/prisma";
 import { Request, Response } from "express";
+import { User } from "../types/user";
+import { CreateUserByEmailAndPassword } from "../services/users.services";
+import { GenerateTokens } from "../middlewares/jwt";
+import { AddRefreshTokenToWhitelist } from "../services/auth.services";
 
 export const Register = async (req: Request, res: Response): Promise<void> => {
     const { name, email, password } = req.body;
@@ -25,20 +29,16 @@ export const Register = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const hashPassword = await bcrypt.hash(password, 10);
-        const user = await prisma.user.create({
-            data: {
-                name: name,
-                email: email,
-                password: hashPassword,
-                updatedAt: new Date(),
-                createdAt: new Date()
-            }
-        });
+        const user = await CreateUserByEmailAndPassword({name , email, password});
+        console.log("User created:", user);
+        const  {accessToken, refreshToken} = GenerateTokens(user);
+        await AddRefreshTokenToWhitelist({refreshToken, userId: user.id});
         res.status(201).send({
             success: true,
-            message: "User created successfully",
-            data: user
+            message: "User created successfully",   
+            data: user,
+            accessToken,
+            refreshToken,
         });
 
     } catch (error) {

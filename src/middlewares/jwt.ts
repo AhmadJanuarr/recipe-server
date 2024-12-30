@@ -1,22 +1,22 @@
 import jwt from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
+import crypto from "crypto";
 
-export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).json({
-            success: false,
-            message: "Unauthorized"
-        })
-    }
+export const GenerateAccessToken = (user :any ) => {
+if (!process.env.JWT_ACCESS_SECRET) {
+    throw new Error("JWT_ACCESS_SECRET is not defined");
+}
+return jwt.sign({userId: user.id}, process.env.JWT_ACCESS_SECRET, {
+    expiresIn: "15m"
+    });
+}
 
-    jwt.verify(authHeader, process.env.TOKEN_SECRET as string, (err: any, user: any) => {
-        if (err) {
-            return res.status(401).json({
-                success: false,
-                message: "invalid token"
-            })
-        }
-        next();
-    })
+export const GenerateRefreshToken = () =>{
+    const token = crypto.randomBytes(16).toString('base64url');
+    return token
+}
+
+export const GenerateTokens =   (user : any) =>{
+    const accessToken = GenerateAccessToken(user);
+    const refreshToken = GenerateRefreshToken();
+    return{ accessToken, refreshToken }
 }
