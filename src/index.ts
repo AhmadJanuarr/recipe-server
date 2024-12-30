@@ -28,11 +28,22 @@ app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
 // routes
 app.use("/api", usersRoute)
 app.get("/", (req: Request, res: Response) => {
-  res.status(200).send("Hellow World");
+  res.status(200).json({
+    success: true,
+    message: "Hello World!",
+  })
 });
+app.use((req: Request, res: Response) => {
+  res.status(404).json({
+    success: false,
+    message: "Not Found 🤷‍♂️", 
+  })
+})
 
 app.listen(PORT, () => {
   console.log(`Express server is listening at http://localhost:${PORT} 🚀`,);
 }).on("error", (error) => {
   throw new Error(error.message);
 });
+
+export default app;
