@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
+// GenerateAccessToken function//
 export const GenerateAccessToken = (user :any ) => {
 if (!process.env.JWT_ACCESS_SECRET) {
     throw new Error("JWT_ACCESS_SECRET is not defined");
@@ -10,11 +11,13 @@ return jwt.sign({userId: user.id}, process.env.JWT_ACCESS_SECRET, {
     });
 }
 
+// GenerateRefreshToken function//
 export const GenerateRefreshToken = () =>{
     const token = crypto.randomBytes(16).toString('base64url');
     return token
 }
 
+// GenerateTokens function//
 export const GenerateTokens =   (user : any) =>{
     const accessToken = GenerateAccessToken(user);
     const refreshToken = GenerateRefreshToken();
