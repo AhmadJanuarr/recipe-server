@@ -1,84 +1,81 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
-import { prisma } from "../../prisma/client/prisma";
 import { validationResult } from "express-validator";
+import { FindUserByEmail } from "../services/users.services";
+import { GenerateTokens } from "../middlewares/jwt";
+import { AddRefreshTokenToWhitelist } from "../services/auth.services";
 
 export const Login = async (req: Request, res: Response): Promise<void> => {
-    const { email, password } = req.body || {};
+    const { email, password } = req.body;
 
-    // handle empty email and password
+    // Validasi input kosong
     if (!email || !password) {
         res.status(400).json({
             success: false,
-            message: "Email dan kata sandi diperlukan"
+            message: "Email dan kata sandi diperlukan",
         });
         return;
     }
 
-    // handle empty email and password
+    // Validasi menggunakan express-validator
     const errors = validationResult(req);
-    if (!errors.isEmpty) {
+    if (!errors.isEmpty()) {
         res.status(400).json({
             success: false,
-            message: "Email dan kata sandi tidak boleh kosong"
+            message: "Validasi gagal",
+            errors: errors.array(),
         });
         return;
     }
 
     try {
-        // Find the user by email
-        const user = await prisma.user.findFirst({
-            where: { email: email },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                password: true,
-                role: true
-            }
-
-        });
-        // Check if user exists
+        // Temukan pengguna berdasarkan email
+        const user = await FindUserByEmail(email);
         if (!user) {
-            res.status(400).json({
+            res.status(404).json({
                 success: false,
-                message: "Pengguna tidak ditemukan"
-            })
-            return
-        }
-        // Check if password is correct
-        const isPasswordValid = await bcrypt.compare(password, user!.password)
-        if (!isPasswordValid) {
-            res.status(400).json({
-                success: false,
-                message: "Password salah"
-            })
-            return
+                message: "Pengguna tidak ditemukan",
+            });
+            return;
         }
 
-        // Generate JWT
-        const token = jwt.sign({ userId: user!.id }, process.env.JWT_SECRET! as string, {
-            expiresIn: "1h"
+        // Verifikasi password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            res.status(401).json({
+                success: false,
+                message: "Kata sandi salah",
+            });
+            return;
+        }
+
+        // Generate accessToken dan refreshToken
+        const { accessToken, refreshToken } = GenerateTokens(user);
+
+        // Tambahkan refreshToken ke whitelist
+        await AddRefreshTokenToWhitelist({
+            refreshToken,
+            userId: user.id,
         });
+
+        // Kirimkan respons sukses
         res.status(200).json({
             success: true,
-            statusCode: 200,
-            message: "Login Berhasil",
+            message: "Login berhasil",
             data: {
-                id: user!.id,
-                name: user!.name,
-                email: user!.email,
-                role: user!.role
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
             },
-            token: token,
-        })
-
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: "Email atau kata sandi salah"
+            accessToken,
+            refreshToken,
         });
-        return
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: "Terjadi kesalahan pada server",
+            error: error.message || error,
+        });
     }
-}
+};
