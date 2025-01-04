@@ -5,6 +5,7 @@ import { FindUserByEmail } from "../services/users.services";
 import { GenerateTokens } from "../middlewares/jwt";
 import { AddRefreshTokenToWhitelist } from "../services/auth.services";
 
+// controller untuk login
 export const Login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
