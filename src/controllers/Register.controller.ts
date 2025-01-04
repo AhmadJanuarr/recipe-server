@@ -5,6 +5,7 @@ import { CreateUserByEmailAndPassword } from "../services/users.services";
 import { GenerateTokens } from "../middlewares/jwt";
 import { AddRefreshTokenToWhitelist } from "../services/auth.services";
 
+// controller untuk membuat user baru
 export const Register = async (req: Request, res: Response): Promise<void> => {
     const { name, email, password } = req.body;
 
