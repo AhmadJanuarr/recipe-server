@@ -1,6 +1,8 @@
 import { prisma } from "../../prisma/client/prisma";
 import { NextFunction, Request, Response } from "express";
 
+
+// controller untuk menampilkan semua resep
 export const GetRecipes = async (req: Request, res: Response) => {
     try {
         const recipes = await prisma.recipe.findMany({
@@ -23,6 +25,8 @@ export const GetRecipes = async (req: Request, res: Response) => {
         });
     }
 }
+
+// controller untuk membuat resep
 export const CreateRecipe = async (req: Request, res: Response) => {
     const { title, description, category } = req.body;
     const image = req.file?.filename;
@@ -92,6 +96,7 @@ export const CreateRecipe = async (req: Request, res: Response) => {
     }
 }
 
+// controller untuk mengupdate resep
 export const UpdateRecipe = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { title, description, ingredients, steps } = req.body;
@@ -122,6 +127,7 @@ export const UpdateRecipe = async (req: Request, res: Response) => {
     }
 };
 
+// controller untuk menghapus resep
 export const DeleteRecipe = async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -143,6 +149,7 @@ export const DeleteRecipe = async (req: Request, res: Response) => {
 };
 
 
+// controller untuk menampilkan resep berdasarkan id
 export const GetRecipeById = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
