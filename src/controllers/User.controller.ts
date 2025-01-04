@@ -7,6 +7,8 @@ import { AddRefreshTokenToWhitelist, DeleteRefreshTokenById, FindRefreshToken, R
 import { FindUserById } from '../services/users.services';
 import { GenerateTokens } from '../middlewares/jwt';
 
+
+// controller untuk logout user
 export const LogoutUser = async (req: Request, res: Response) => {
     try {
         const cookie = req.cookies.refreshToken;
@@ -30,6 +32,8 @@ export const LogoutUser = async (req: Request, res: Response) => {
     }
 }
 
+
+// controller untuk mengambil user
 export const GetUsers = async( req: Request, res: Response) => {
     try{
         const users = await prisma.user.findMany();
@@ -49,6 +53,7 @@ export const GetUsers = async( req: Request, res: Response) => {
 
 }
 
+// controller untuk membuat user
 
 export const CreateUser = async( req: Request, res: Response) => { 
     const errors = validationResult(req);
