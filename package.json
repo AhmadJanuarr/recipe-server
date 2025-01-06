@@ -33,7 +33,7 @@
     "babel-jest": "^29.7.0",
     "prisma": "^5.22.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   },
   "dependencies": {
     "-": "^0.0.1",
