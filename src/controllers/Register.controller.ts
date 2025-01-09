@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import { prisma } from '../../prisma/client/prisma';
 import { Request, Response } from "express";
 import { CreateUserByEmailAndPassword } from "../services/users.services";
@@ -31,7 +30,7 @@ export const Register = async (req: Request, res: Response): Promise<void> => {
         }
 
         const user = await CreateUserByEmailAndPassword({name , email, password});
-        const  {accessToken, refreshToken} = GenerateTokens(user);
+        const  {accessToken, refreshToken} = await GenerateTokens(user);
         await AddRefreshTokenToWhitelist({refreshToken, userId: user.id});
         res.status(201).send({
             success: true,
