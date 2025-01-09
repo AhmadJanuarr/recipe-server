@@ -29,6 +29,7 @@ export const Login = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    // 
     try {
         // Temukan pengguna berdasarkan email
         const user = await FindUserByEmail(email);
@@ -39,8 +40,6 @@ export const Login = async (req: Request, res: Response): Promise<void> => {
             });
             return;
         }
-
-        // Verifikasi password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             res.status(401).json({
@@ -49,17 +48,8 @@ export const Login = async (req: Request, res: Response): Promise<void> => {
             });
             return;
         }
-
         // Generate accessToken dan refreshToken
-        const { accessToken, refreshToken } = GenerateTokens(user);
-
-        // Tambahkan refreshToken ke whitelist
-        await AddRefreshTokenToWhitelist({
-            refreshToken,
-            userId: user.id,
-        });
-
-        // Kirimkan respons sukses
+        const { accessToken, refreshToken } = await GenerateTokens(user);
         res.status(200).json({
             success: true,
             message: "Login berhasil",
