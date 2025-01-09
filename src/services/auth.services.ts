@@ -16,7 +16,7 @@ export const AddRefreshTokenToWhitelist = ({refreshToken, userId} : AddRefreshTo
 }
 
 export const FindRefreshToken = (token : string) =>{
-    return prisma.refreshToken.findFirst({
+    return prisma.refreshToken.findUnique({
         where : {
             hashToken : HashToken(token)
         }
