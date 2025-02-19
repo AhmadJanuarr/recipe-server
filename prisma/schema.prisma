@@ -7,19 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id           Int            @id @default(autoincrement())
-  name         String         @db.VarChar(255)
-  email        String         @unique
-  password     String
-  role         Role           @default(USER)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime
-  favorite     Favorite?
-  recipes      Recipe[]
-  RefreshToken RefreshToken[]
-}
-
 enum Role {
   USER
   ADMIN
@@ -31,20 +18,41 @@ enum Category {
   Kue
 }
 
+enum Difficulty {
+  Mudah
+  Sedang
+  Sulit
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(255)
+  email        String         @unique
+  password     String
+  role         Role           @default(USER)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  favorite     Favorite?
+  recipes      Recipe[]
+  RefreshToken RefreshToken[]
+}
+
 model Recipe {
   id          Int          @id @default(autoincrement())
   title       String       @db.VarChar(255)
   description String
   ingredients Ingredient[]
   steps       Steps[]
+  favorite    Favorite[]
+  tips        String?
   image       String?
+  difficulty  Difficulty
+  nutrition   Nutrition?
   category    Category
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  Favorite    Favorite[]
-  User        User?        @relation(fields: [userId], references: [id])
+  user        User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int?
-  categoryId  Int?
 }
 
 model Ingredient {
@@ -55,18 +63,30 @@ model Ingredient {
 }
 
 model Steps {
-  id       Int    @id @default(autoincrement())
-  name     String
-  recipeId Int
-  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  id          Int    @id @default(autoincrement())
+  description String
+  recipeId    Int
+  recipe      Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
 model Favorite {
   id       Int    @id @default(autoincrement())
   userId   Int    @unique
   recipeId Int
-  user     User   @relation(fields: [userId], references: [id])
-  recipe   Recipe @relation(fields: [recipeId], references: [id])
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recipeId])
+}
+
+model Nutrition {
+  id       Int    @id @default(autoincrement())
+  calories Int?
+  protein  Float?
+  fat      Float?
+  carbs    Float?
+  recipeId Int    @unique
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
 model RefreshToken {
