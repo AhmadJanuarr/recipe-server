@@ -31,13 +31,13 @@
     "@types/node": "^22.9.0",
     "@types/supertest": "^6.0.2",
     "babel-jest": "^29.7.0",
-    "prisma": "^5.22.0",
+    "prisma": "^6.3.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
   },
   "dependencies": {
     "-": "^0.0.1",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^6.3.1",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
