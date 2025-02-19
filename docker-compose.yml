@@ -1,0 +1,42 @@
+version: '3.9'
+services:
+  recipe:
+    image: recipe_image:latest
+    ports: 
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "mysql://root:130102@mysql:3307/recipe_management"
+      PORT: 3000
+      JWT_ACCESS_SECRET: ACCESS123
+      JWT_REFRESH_SECRET: REFRESH123
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    command: >
+      sh -c "sleep 30 && npx prisma migrate dev"
+    networks:
+      - recipe_network
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: recipe_management 
+      MYSQL_ROOT_PASSWORD: 130102 
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql:z
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - recipe_network
+
+volumes:
+  mysql-data:
+
+networks:
+  recipe_network:
