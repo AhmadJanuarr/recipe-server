@@ -1,4 +1,4 @@
-# Recipe Management Backend
+# Recipe Management Backend v.1.1
 
 Backend API untuk sistem manajemen resep makanan, dibangun menggunakan **Express**, **Prisma**, dan **MySQL** sebagai database utama. Sistem ini mencakup autentikasi pengguna, pengelolaan resep, dan mendukung peran pengguna (admin dan user biasa).
 
@@ -57,8 +57,8 @@ Backend API untuk sistem manajemen resep makanan, dibangun menggunakan **Express
 | POST   | `/api/auth/forgot-passowrd` |                 Reset Password |
 | GET    |       `/api/recipes`        | Mendapatkan daftar semua resep |
 | POST   |       `/api/recipes`        |         Menambahkan resep baru |
+| GET |     `/api/recipes/:recipeName`      | Mendapatkan resep berdsarkan nama|
 | PUT    |     `/api/recipes/:id`      |  Mengedit resep berdasarkan ID |
-| DELETE |     `/api/recipes/:id`      | Menghapus resep berdasarkan ID |
 | DELETE |     `/api/recipes/:id`      | Menghapus resep berdasarkan ID |
 
 ## Instalasi
