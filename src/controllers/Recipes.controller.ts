@@ -29,8 +29,6 @@ export const CreateRecipe = async (req: Request, res: Response) => {
   let ingredients: string[] = [];
   let steps: string[] = [];
 
-  console.log(req.body);
-
   try {
     ingredients = JSON.parse(req.body.ingredients);
     steps = JSON.parse(req.body.steps);
