@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-
     "target": "ES6",
     "module": "commonjs",
     "strict": true,
@@ -8,8 +7,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
     "typeRoots": ["./node_modules/@types", "./src/types"]
   },
   "include": ["./**/*"]
