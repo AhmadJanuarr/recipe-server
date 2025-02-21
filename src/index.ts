@@ -6,6 +6,8 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import multer from "multer";
+import { VercelRequest, VercelResponse } from "@vercel/node";
+
 dotenv.config();
 
 const app = express();
@@ -30,7 +32,7 @@ app.use("/api", usersRoute);
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
-    message: "Hello World!",
+    message: "Welcome to the API 🚀",
   });
 });
 app.use((req: Request, res: Response) => {
