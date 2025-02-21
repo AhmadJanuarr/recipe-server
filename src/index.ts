@@ -42,4 +42,10 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-export default app;
+export default (req: VercelRequest, res: VercelResponse) => {
+  return app(req, res);
+};
+
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
