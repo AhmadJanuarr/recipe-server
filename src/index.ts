@@ -40,12 +40,4 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-app
-  .listen(PORT, () => {
-    console.log(`Express server is listening at http://localhost:${PORT} 🚀`);
-  })
-  .on("error", (error) => {
-    throw new Error(error.message);
-  });
-
 export default app;
