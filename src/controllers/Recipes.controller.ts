@@ -1,5 +1,6 @@
 import { prisma } from "../../prisma/client/prisma";
 import { Request, Response } from "express";
+import { UploadImageToSupabase } from "../services/supabase.services";
 
 export const GetRecipes = async (req: Request, res: Response) => {
   try {
@@ -25,11 +26,19 @@ export const GetRecipes = async (req: Request, res: Response) => {
 
 export const CreateRecipe = async (req: Request, res: Response) => {
   const { title, description, category, calories, protein, fat, carbs, tips, difficulty } = req.body;
-  const image = req.file?.filename;
+  if (!req.file) {
+    res.status(422).json({
+      success: false,
+      message: "Gambar resep harus diisi",
+    });
+    return;
+  }
   let ingredients: string[] = [];
   let steps: string[] = [];
+  let imageUrl: string;
 
   try {
+    imageUrl = await UploadImageToSupabase(req.file);
     ingredients = JSON.parse(req.body.ingredients);
     steps = JSON.parse(req.body.steps);
   } catch (error: any) {
@@ -40,15 +49,6 @@ export const CreateRecipe = async (req: Request, res: Response) => {
     });
     return;
   }
-
-  if (!req.file) {
-    res.status(422).json({
-      success: false,
-      message: "Gambar resep harus diisi",
-    });
-    return;
-  }
-
   const nutritionData = {
     calories: parseInt(calories),
     protein: parseFloat(protein),
@@ -82,7 +82,7 @@ export const CreateRecipe = async (req: Request, res: Response) => {
       data: {
         title,
         description,
-        image,
+        image: imageUrl,
         category,
         tips,
         difficulty,
@@ -115,18 +115,50 @@ export const CreateRecipe = async (req: Request, res: Response) => {
 
 export const UpdateRecipe = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { title, description, ingredients, steps } = req.body;
-  const image = req.file?.filename;
+  const { title, description, category, ingredients, steps, calories, protein, fat, carbs } = req.body;
 
   try {
+    let imageUrl: string | undefined;
+    if (req.file) {
+      imageUrl = await UploadImageToSupabase(req.file);
+      res.status(422).json({
+        success: false,
+        message: "Gambar resep harus diisi",
+      });
+      return;
+    }
+    const nutritionData = {
+      calories: parseInt(calories),
+      protein: parseFloat(protein),
+      fat: parseFloat(fat),
+      carbs: parseFloat(carbs),
+    };
+
+    if (Object.values(nutritionData).some(isNaN)) {
+      res.status(422).json({
+        success: false,
+        message: "Nutrisi harus berupa angka",
+      });
+    }
+
     const updatedRecipe = await prisma.recipe.update({
       where: { id: Number(id) },
       data: {
         title,
         description,
-        ingredients,
-        steps,
-        image,
+        category,
+        image: imageUrl,
+        nutrition: {
+          update: nutritionData,
+        },
+        ingredients: {
+          deleteMany: {},
+          create: JSON.parse(ingredients).map((ingredient: string) => ({ name: ingredient })),
+        },
+        steps: {
+          deleteMany: {},
+          create: JSON.parse(steps).map((step: string) => ({ description: step })),
+        },
       },
     });
     res.status(201).json({
@@ -140,6 +172,7 @@ export const UpdateRecipe = async (req: Request, res: Response) => {
       message: "Gagal memperbarui resep",
       data: error.message,
     });
+    return;
   }
 };
 
@@ -162,7 +195,6 @@ export const DeleteRecipe = async (req: Request, res: Response) => {
   }
 };
 
-// controller untuk menampilkan resep berdasarkan id
 export const GetRecipeByName = async (req: Request, res: Response) => {
   const { recipeName } = req.params;
   try {
@@ -175,6 +207,7 @@ export const GetRecipeByName = async (req: Request, res: Response) => {
       include: {
         ingredients: true,
         steps: true,
+        nutrition: true,
       },
     });
     if (!byName) {
@@ -192,7 +225,7 @@ export const GetRecipeByName = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: "Gagal menemukan resep",
+      message: "Gagal ditemukan karena server error",
       msg: error.message,
     });
   }
