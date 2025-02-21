@@ -7,6 +7,10 @@
       "config": { "includeFiles": ["dist/**"] }
     }
   ],
-    "routes": [{ "src": "/(.*)", "dest": "api/index.ts" }]
-
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/index.js"
+    }
+  ]
 }
