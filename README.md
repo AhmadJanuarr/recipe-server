@@ -1,4 +1,4 @@
-# Recipe Management Backend v.1.2
+# Recipe Management Backend v.1.1.1
 
 Backend API untuk sistem manajemen resep makanan, dibangun menggunakan **Express**, **Prisma**, dan **Supabase (PostgreSQL)** sebagai database utama. Sistem ini mencakup autentikasi pengguna, pengelolaan resep, dan mendukung peran pengguna (admin dan user biasa).
 
