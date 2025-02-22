@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { FindUserByEmail } from "../services/users.services";
 import { GenerateTokens } from "../middlewares/jwt";
-import { AddRefreshTokenToWhitelist } from "../services/auth.services";
 
 export const Login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
