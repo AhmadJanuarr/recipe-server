@@ -6,8 +6,11 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist",
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "outDir": "dist",
+    "rootDir": "src",
+    "moduleResolution": "node",
+    "typeRoots": ["./node_modules/@types", "src/types"]
   },
-  "include": ["./**/*"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }
