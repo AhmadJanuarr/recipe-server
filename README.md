@@ -1,23 +1,20 @@
-# Recipe Management Backend v.1.1
+# Recipe Management Backend v.1.2
 
-Backend API untuk sistem manajemen resep makanan, dibangun menggunakan **Express**, **Prisma**, dan **MySQL** sebagai database utama. Sistem ini mencakup autentikasi pengguna, pengelolaan resep, dan mendukung peran pengguna (admin dan user biasa).
+Backend API untuk sistem manajemen resep makanan, dibangun menggunakan **Express**, **Prisma**, dan **Supabase (PostgreSQL)** sebagai database utama. Sistem ini mencakup autentikasi pengguna, pengelolaan resep, dan mendukung peran pengguna (admin dan user biasa).
 
 ## Fitur Utama
 
 - **Autentikasi JWT**: Pengguna dapat mendaftar dan masuk menggunakan token JWT untuk mengakses API.
 - **Pengelolaan Resep**: CRUD untuk resep makanan, memungkinkan admin untuk menambahkan, mengedit, atau menghapus resep.
 - **Manajemen Pengguna**: Mendukung peran pengguna dengan izin akses yang berbeda.
-- **Upload Gambar**: Upload gambar untuk resep menggunakan `multer`.
+- **Upload Gambar**: Upload Gambar: Upload gambar untuk resep menggunakan multer dan disimpan di `Supabase Storage`.
 
 ## Teknologi yang Digunakan
 
 - **Express**: Framework backend untuk Node.js.
-- **Prisma**: ORM untuk integrasi dengan database MySQL.
+- **Prisma**: ORM untuk integrasi dengan database PostgreSQL.
 - **JWT (jsonwebtoken)**: Untuk autentikasi berbasis token.
-- **bcrypt**: Enkripsi kata sandi pengguna.
-- **Multer**: Untuk menangani upload file (gambar resep).
-- **dotenv**: Untuk manajemen variabel lingkungan.
-- **Express Validator**: Untuk validasi input.
+- **Supabase**: Layanan backend untuk database dan penyimpanan file.
 
 ## Struktur Folder
 
@@ -79,12 +76,20 @@ npm install
 3. Buat file .env di root proyek dan tambahkan konfigurasi berikut:
 
 ```bash
-DATABASE_URL="mysql://user:password@localhost:3306/database_name"
+DATABASE_URL="postgresql://user:password@db.supabase.co:5432/database_name"
 JWT_SECRET="your_jwt_secret"
+SUPABASE_URL="https://your-supabase-instance.supabase.co"
+SUPABASE_KEY="your_supabase_service_role_key"
+SUPABASE_BUCKET="recipe-images"
 ```
 
 4. Jalankan migrasi Prisma untuk membuat tabel di database:
 
 ```bash
 npx prisma migrate dev
+```
+
+5. Jalankan server:
+```bash
+npm run dev
 ```
