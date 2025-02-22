@@ -1,12 +1,11 @@
+import { fileFilter, fileStorage } from "./middlewares/multer";
 import express from "express";
 import dotenv from "dotenv";
-import { fileFilter, fileStorage } from "./middlewares/multer";
 import usersRoute from "./routes";
 import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import multer from "multer";
-import { VercelRequest, VercelResponse } from "@vercel/node";
 
 dotenv.config();
 
@@ -30,13 +29,10 @@ app.use((req, res, next) => {
 // Routes
 app.use("/api", usersRoute);
 app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Welcome to the API 🚀",
-  });
+  res.send("Hey this is my API running 🥳");
 });
 
-// 404 Not Found Handler
+app.on("error", (error) => console.error("Server error", error));
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -44,5 +40,4 @@ app.use((req, res) => {
   });
 });
 
-// ✅ Ekspor untuk Vercel
 export default app;
