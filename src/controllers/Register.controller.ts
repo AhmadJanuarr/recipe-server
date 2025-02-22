@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client/prisma";
+import { prisma } from "../utils/prisma";
 import { Request, Response } from "express";
 import { CreateUserByEmailAndPassword } from "../services/users.services";
 import { GenerateTokens } from "../middlewares/jwt";

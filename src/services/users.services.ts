@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client/prisma";
+import { prisma } from "../utils/prisma";
 import bcrypt from "bcrypt";
 
 type UserProps = {

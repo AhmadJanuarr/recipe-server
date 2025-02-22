@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { prisma } from "../../prisma/client/prisma";
+import { prisma } from "../utils/prisma";
 
 type UserProps = {
   id: number;
