@@ -1,7 +1,6 @@
-import { prisma } from "../../prisma/client/prisma";
 import { Request, Response } from "express";
 import { UploadImageToSupabase } from "../services/supabase.services";
-
+import { prisma } from "../utils/prisma";
 export const GetRecipes = async (req: Request, res: Response) => {
   try {
     const recipes = await prisma.recipe.findMany({
