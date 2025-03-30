@@ -4,30 +4,6 @@ import { prisma } from "../utils/prisma";
 import { validationResult } from "express-validator";
 import { User } from "../types/user";
 
-// controller untuk logout user
-export const LogoutUser = async (req: Request, res: Response) => {
-  try {
-    const cookie = req.cookies.refreshToken;
-    if (!cookie) {
-      res.status(400).json({
-        success: false,
-        message: "Anda belum login",
-      });
-    }
-    res.clearCookie("refreshToken");
-    res.status(200).json({
-      success: true,
-      message: "Logout success",
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Gagal logout",
-      msg: error.message,
-    });
-  }
-};
-
 // controller untuk mengambil user
 export const GetUsers = async (req: Request, res: Response) => {
   try {
@@ -47,7 +23,6 @@ export const GetUsers = async (req: Request, res: Response) => {
 };
 
 // controller untuk membuat user
-
 export const CreateUser = async (req: Request, res: Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
