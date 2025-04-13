@@ -302,17 +302,24 @@ npm install
 3. Buat file .env di root proyek dan tambahkan konfigurasi berikut:
 
 ```bash
-DATABASE_URL="postgresql://user:password@db.supabase.co:5432/database_name"
-JWT_SECRET="your_jwt_secret"
-SUPABASE_URL="https://your-supabase-instance.supabase.co"
-SUPABASE_KEY="your_supabase_service_role_key"
-SUPABASE_BUCKET="recipe-images"
+
+# Connect to Supabase via connection pooling with Supavisor.
+DATABASE_URL="postgresql://postgres.esgmtxjujbrtwrodbhci:[YOUR-PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+
+# Direct connection to the database. Used for migrations.
+DIRECT_URL="postgresql://postgres.esgmtxjujbrtwrodbhci:[YOUR-PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+
+JWT_ACCESS_SECRET=YOUR-ACCESS
+JWT_REFRESH_SECRET=YOUR-REFRESH  
+SUPABASE_SERVICE_ROLE_KEY=YOUR-SERVICE
+SUPABASE_URL=your-supabase-url
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
 4. Jalankan migrasi Prisma untuk membuat tabel di database:
 
 ```bash
-npx prisma migrate dev
+npx prisma db push
 ```
 
 5. Jalankan server:
