@@ -36,11 +36,6 @@ Backend API untuk sistem manajemen resep makanan, dibangun menggunakan **Express
 └── README.md
 ```
 
-## Persayratan
-
-- **Node.js** v16 ke atas
-- **MySQL** server
-
 ## API Endpoints
 
 
@@ -63,11 +58,12 @@ Backend API untuk sistem manajemen resep makanan, dibangun menggunakan **Express
 
 ### Example API Request Body
 
-<h4>Response Resep body</h4>
+<h4>Request Resep body</h4>
 
 ```http
 GET /api/recipes
 ```
+<h4>Response Resep body</h4>
 
 **Status 200**
 
@@ -171,11 +167,13 @@ GET /api/recipes
     }
 ```
 
-<h4> Response Detail Resep body</h4>
+<h4>Request Detail Resep body</h4>
 
 ```http
 GET /api/recipes/combro
 ```
+
+<h4>Response Detail Resep body</h4>
 
 **Status 200**
 
@@ -292,7 +290,7 @@ GET /api/recipes/combro
 git clone https://github.com/AhmadJanuarr/recipe-server.git
 cd recipe-server
 ```
-
+****
 2. Install dependencies:
 
 ```bash
