@@ -29,7 +29,7 @@ export const AddFavorite = async (req: CustomRequest, res: Response) => {
     if (existingFavorite) {
       res.status(400).json({
         success: false,
-        message: "Favorite sudah ada ",
+        message: "Resep sudah ada di favorite",
       });
       return;
     }
@@ -43,7 +43,7 @@ export const AddFavorite = async (req: CustomRequest, res: Response) => {
 
     res.status(201).json({
       success: true,
-      message: "Favorite berhasil ditambahkan",
+      message: "Resep berhasil ditambahkan ke favorite",
       data: favorite,
     });
   } catch (error: any) {
