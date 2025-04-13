@@ -105,14 +105,15 @@ export const Register = async (req: Request, res: Response): Promise<void> => {
 
 export const LogoutUser = async (req: Request, res: Response) => {
   try {
-    const cookie = req.cookies.refreshToken;
-    if (!cookie) {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
       res.status(400).json({
         success: false,
         message: "Anda belum login",
       });
+      return;
     }
-    res.clearCookie("refreshToken");
+
     res.status(200).json({
       success: true,
       message: "Logout success",
