@@ -4,7 +4,6 @@ import { prisma } from "../utils/prisma";
 import { validationResult } from "express-validator";
 import { User } from "../types/user";
 
-// controller untuk mengambil user
 export const GetUsers = async (req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany();
@@ -22,7 +21,6 @@ export const GetUsers = async (req: Request, res: Response) => {
   }
 };
 
-// controller untuk membuat user
 export const CreateUser = async (req: Request, res: Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
