@@ -1,17 +1,17 @@
 import express from "express";
-import { validateLogin, validateRegister } from "../utils/validation/auth";
+import { Login, LogoutUser, Register } from "../controllers/auth/authController";
+import { ToggleFavorite } from "../controllers/favoriteController";
 import {
   CreateRecipe,
   DeleteRecipe,
+  GetRecipeByName,
   GetRecipes,
   UpdateRecipe,
-  GetRecipeByName,
 } from "../controllers/recipesController";
-import { isAuthenticated } from "../middlewares/protected.route";
 import { RefreshAccessToken } from "../controllers/tokenController";
 import { authorizeRoles } from "../middlewares/authorize.roles";
-import { AddFavorite, DeleteFavorite } from "../controllers/favoriteController";
-import { Login, LogoutUser, Register } from "../controllers/auth/authController";
+import { isAuthenticated } from "../middlewares/protected.route";
+import { validateLogin, validateRegister } from "../utils/validation/auth";
 const router = express.Router();
 
 // auth routes:
@@ -32,6 +32,6 @@ router.put("/recipes/:id", UpdateRecipe);
 router.delete("/recipes/:id", DeleteRecipe);
 
 //feature favorite
-router.post("/recipes/favorite/:recipeId", isAuthenticated, AddFavorite);
-router.delete("/recipes/favorite/:recipeId", isAuthenticated, DeleteFavorite);
+router.post("/recipes/favorite/:recipeId/toggle", isAuthenticated, ToggleFavorite);
+
 export default router;
