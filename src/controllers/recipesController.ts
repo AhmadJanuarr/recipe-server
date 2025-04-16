@@ -1,18 +1,29 @@
-import { Request, Response } from "express";
+import { Response, Request } from "express";
 import { UploadImageToSupabase } from "../services/supabase.services";
 import { prisma } from "../utils/prisma";
-export const GetRecipes = async (req: Request, res: Response) => {
+import { CustomRequest } from "../types/payload";
+
+export const GetRecipes = async (req: CustomRequest, res: Response) => {
+  const { userId } = req.payload || {};
   try {
     const recipes = await prisma.recipe.findMany({
       include: {
+        favorite: {
+          where: {
+            userId,
+          },
+        },
         ingredients: true,
         steps: true,
       },
     });
+
+    const RecipeWithNewFeature = recipes.map((recipe) => ({ ...recipe, isFavorite: recipe.favorite.length > 0 }));
+
     res.status(200).json({
       success: true,
       message: "Berhasil mengambil resep",
-      data: recipes,
+      data: RecipeWithNewFeature,
     });
   } catch (error: any) {
     res.status(500).json({
