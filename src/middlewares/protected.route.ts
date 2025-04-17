@@ -1,15 +1,11 @@
 import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
+import { CustomRequest } from "../types/payload";
 
-interface CustomRequest extends Request {
-  payload?: {
-    userId: number;
-    role: string;
-  };
-}
 export const isAuthenticated = (req: CustomRequest, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
-  // mengecek apakah ada token
+
+  // mengecek apakah ada token di header
   if (!authorization) {
     res.status(401).send({
       success: false,
