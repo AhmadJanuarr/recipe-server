@@ -3,6 +3,68 @@ import { Request, Response } from "express";
 import { prisma } from "../utils/prisma";
 import { validationResult } from "express-validator";
 import { User } from "../types/user";
+import { CustomRequest } from "../types/payload";
+
+export const UpdateName = async (req: CustomRequest, res: Response) => {
+  const { name } = req.body;
+  const { userId } = req.payload || {};
+
+  if (!name) {
+    res.status(400).json({
+      success: false,
+      message: "Nama harus diisi",
+    });
+    return;
+  }
+  try {
+    const updateUserName = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        name: name,
+      },
+    });
+    res.status(200).json({
+      success: true,
+      message: "Berhasil mengubah nama",
+      data: updateUserName,
+    });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: "Gagal mengubah nama", msg: error.message });
+  }
+};
+
+export const UpdateEmail = async (req: CustomRequest, res: Response) => {
+  const { email } = req.body;
+  const { userId } = req.payload || {};
+
+  if (!email) {
+    res.status(400).json({
+      success: false,
+      message: "Email harus diisi",
+    });
+    return;
+  }
+
+  try {
+    const UpdateUserEmail = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        email: email,
+      },
+    });
+    res.status(200).json({
+      success: true,
+      message: "Berhasil mengubah email",
+      data: UpdateUserEmail,
+    });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: "Gagal mengubah email", msg: error.message });
+  }
+};
 
 export const GetUsers = async (req: Request, res: Response) => {
   try {
