@@ -12,7 +12,7 @@ import { RefreshAccessToken } from "../controllers/tokenController";
 import { authorizeRoles } from "../middlewares/authorize.roles";
 import { isAuthenticated } from "../middlewares/protected.route";
 import { validateLogin, validateRegister } from "../utils/validation/auth";
-import { UpdateEmail, UpdateName } from "../controllers/User.controller";
+import { UpdateEmail, UpdateName, UpdatePassword } from "../controllers/User.controller";
 const router = express.Router();
 
 // auth routes
@@ -35,6 +35,7 @@ router.delete("/recipes/:id", DeleteRecipe);
 //feature user
 router.put("/auth/profile/update-name", isAuthenticated, UpdateName);
 router.put("/auth/profile/update-email", isAuthenticated, UpdateEmail);
+router.put("/auth/profile/update-password", isAuthenticated, UpdatePassword);
 
 //feature favorite
 router.post("/recipes/favorite/:recipeId/toggle", isAuthenticated, ToggleFavorite);
