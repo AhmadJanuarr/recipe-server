@@ -1,6 +1,6 @@
 import express from "express";
 import { Login, LogoutUser, Register } from "../controllers/auth/authController";
-import { ToggleFavorite } from "../controllers/favoriteController";
+import { GetAllFavorite, ToggleFavorite } from "../controllers/favoriteController";
 import {
   CreateRecipe,
   DeleteRecipe,
@@ -12,9 +12,10 @@ import { RefreshAccessToken } from "../controllers/tokenController";
 import { authorizeRoles } from "../middlewares/authorize.roles";
 import { isAuthenticated } from "../middlewares/protected.route";
 import { validateLogin, validateRegister } from "../utils/validation/auth";
+import { UpdateEmail, UpdateName } from "../controllers/User.controller";
 const router = express.Router();
 
-// auth routes:
+// auth routes
 router.post("/auth/login", validateLogin, Login);
 router.post("/auth/register", validateRegister, Register);
 router.post("/auth/logout", LogoutUser);
@@ -31,7 +32,12 @@ router.post("/recipes", CreateRecipe);
 router.put("/recipes/:id", UpdateRecipe);
 router.delete("/recipes/:id", DeleteRecipe);
 
+//feature user
+router.put("/auth/profile/update-name", isAuthenticated, UpdateName);
+router.put("/auth/profile/update-email", isAuthenticated, UpdateEmail);
+
 //feature favorite
 router.post("/recipes/favorite/:recipeId/toggle", isAuthenticated, ToggleFavorite);
+router.get("/recipes/favorites", isAuthenticated, GetAllFavorite);
 
 export default router;
