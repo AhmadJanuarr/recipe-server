@@ -29,3 +29,32 @@ export const CreateUserByEmailAndPassword = (user: UserProps) => {
     },
   });
 };
+
+export const UpdateUserName = (userId: number, name: string) => {
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      name,
+    },
+  });
+};
+
+export const UpdateUserEmail = async (userId: number, email: string) => {
+  return await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      email: email,
+    },
+  });
+};
+
+export const UpdateUserPassword = async (userId: number, password: string) => {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: { password },
+  });
+};
