@@ -49,3 +49,39 @@ export const ToggleFavorite = async (req: CustomRequest, res: Response) => {
     isFavorite: true,
   });
 };
+
+export const GetAllFavorite = async (req: CustomRequest, res: Response) => {
+  const { userId } = req.payload || {};
+  if (!userId) {
+    res.status(401).json({
+      success: false,
+      message: "Unauthorized: User tidak ditemukan atau belum login",
+    });
+    return;
+  }
+
+  try {
+    const recipes = await prisma.recipe.findMany({
+      include: {
+        favorite: {
+          where: {
+            userId,
+          },
+        },
+      },
+    });
+    const RecipeWithNewFeature = recipes.map((recipe) => ({ ...recipe, isFavorite: recipe.favorite.length > 0 }));
+
+    res.status(200).json({
+      success: true,
+      message: "Berhasil mengambil semua resep favorite",
+      data: RecipeWithNewFeature,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: "Gagal mengambil resep favorite",
+      data: error.message,
+    });
+  }
+};
