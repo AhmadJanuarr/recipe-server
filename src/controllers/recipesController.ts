@@ -12,13 +12,15 @@ export const GetRecipes = async (req: CustomRequest, res: Response) => {
           where: {
             userId,
           },
+          select: {
+            userId: true,
+          },
         },
         ingredients: true,
         steps: true,
       },
     });
-
-    const RecipeWithNewFeature = recipes.map((recipe) => ({ ...recipe, isFavorite: recipe.favorite.length > 0 }));
+    const RecipeWithNewFeature = recipes.map((recipe) => ({ isFavorite: recipe.favorite.length > 0, ...recipe }));
 
     res.status(200).json({
       success: true,
