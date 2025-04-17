@@ -13,7 +13,7 @@ export const isAuthenticated = (req: CustomRequest, res: Response, next: NextFun
   if (!authorization) {
     res.status(401).send({
       success: false,
-      message: "Un-Authorized Access",
+      message: "Un-Authorized Access | anda belum login | anda tidak memiliki token",
     });
     return;
   }
