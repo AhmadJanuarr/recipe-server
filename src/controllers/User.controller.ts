@@ -1,9 +1,10 @@
-import bcrypt from "bcrypt";
+import { UserProps } from "./../types/user.d";
 import { Request, Response } from "express";
 import { prisma } from "../utils/prisma";
 import { validationResult } from "express-validator";
-import { User } from "../types/user";
 import { CustomRequest } from "../types/payload";
+import { UpdateUserEmail, UpdateUserName, UpdateUserPassword } from "../services/users.services";
+import bcrypt from "bcrypt";
 
 export const UpdateName = async (req: CustomRequest, res: Response) => {
   const { name } = req.body;
@@ -17,18 +18,18 @@ export const UpdateName = async (req: CustomRequest, res: Response) => {
     return;
   }
   try {
-    const updateUserName = await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        name: name,
-      },
-    });
+    if (!userId) {
+      res.status(400).json({
+        success: false,
+        message: "User ID tidak ditemukan",
+      });
+      return;
+    }
+    const updateName = UpdateUserName(userId, name);
     res.status(200).json({
       success: true,
       message: "Berhasil mengubah nama",
-      data: updateUserName,
+      data: updateName,
     });
   } catch (error: any) {
     res.status(400).json({ success: false, message: "Gagal mengubah nama", msg: error.message });
@@ -48,21 +49,57 @@ export const UpdateEmail = async (req: CustomRequest, res: Response) => {
   }
 
   try {
-    const UpdateUserEmail = await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        email: email,
-      },
-    });
+    if (!userId) {
+      res.status(400).json({
+        success: false,
+        message: "User ID tidak ditemukan",
+      });
+      return;
+    }
+    const UpdateEmail = UpdateUserEmail(userId, email);
     res.status(200).json({
       success: true,
       message: "Berhasil mengubah email",
-      data: UpdateUserEmail,
+      data: UpdateEmail,
     });
   } catch (error: any) {
     res.status(400).json({ success: false, message: "Gagal mengubah email", msg: error.message });
+  }
+};
+
+export const UpdatePassword = async (req: CustomRequest, res: Response) => {
+  const { userId } = req.payload || {};
+  const { newPassword, currentPassword } = req.body;
+
+  if (!userId) {
+    res.status(400).json({ success: false, message: "User tidak ditemukan" });
+    return;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      password: true,
+    },
+  });
+
+  try {
+    const isMatch = await bcrypt.compare(currentPassword, user!.password);
+    if (!isMatch) {
+      res.status(400).json({ success: false, message: "Password tidak sama dengan password sebelumnya" });
+      return;
+    }
+    const hashPassword = await bcrypt.hash(newPassword, 10);
+    const UpdatePassword = UpdateUserPassword(userId, hashPassword);
+    res.status(200).json({
+      success: true,
+      message: "Berhasil mengubah password",
+      data: UpdatePassword,
+    });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: "Gagal mengubah password", msg: error.message });
   }
 };
 
@@ -94,7 +131,7 @@ export const CreateUser = async (req: Request, res: Response) => {
   }
   const hashPassword = await bcrypt.hash(req.body.password, 10);
   try {
-    const user: User = await prisma.user.create({
+    const user: UserProps = await prisma.user.create({
       data: {
         name: req.body.name,
         email: req.body.email,
