@@ -1,7 +1,7 @@
-export interface User {
-    name : string;
-    email : string;
-    password? : string;
-    updatedAt : Date;
-    createdAt : Date;
+export interface UserProps {
+  name: string;
+  email: string;
+  password?: string;
+  updatedAt: Date;
+  createdAt: Date;
 }
