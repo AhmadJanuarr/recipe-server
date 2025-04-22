@@ -52,6 +52,10 @@ export const ToggleFavorite = async (req: CustomRequest, res: Response) => {
 
 export const GetAllFavorite = async (req: CustomRequest, res: Response) => {
   const { userId } = req.payload || {};
+  const { userName } = req.params;
+
+  console.log(userId, userName);
+
   if (!userId) {
     res.status(401).json({
       success: false,
@@ -60,17 +64,36 @@ export const GetAllFavorite = async (req: CustomRequest, res: Response) => {
     return;
   }
 
+  const userNameReplace = userName.replace("-", " ");
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+      name: userNameReplace,
+    },
+  });
+
+  if (!user) {
+    res.status(404).json({
+      success: false,
+      message: "User tidak ditemukan",
+    });
+    return;
+  }
+
   try {
     const recipes = await prisma.recipe.findMany({
-      include: {
+      where: {
         favorite: {
-          where: {
-            userId,
+          some: {
+            userId: userId,
           },
         },
       },
+      include: {
+        favorite: true,
+      },
     });
-    const RecipeWithNewFeature = recipes.map((recipe) => ({ ...recipe, isFavorite: recipe.favorite.length > 0 }));
+    const RecipeWithNewFeature = recipes.map((recipe) => ({ ...recipe, isFavorite: recipe.favorite?.length > 0 }));
 
     res.status(200).json({
       success: true,
