@@ -16,7 +16,6 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
-app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single("image"));
 
 // Middleware CORS & Headers
 app.use((req, res, next) => {
