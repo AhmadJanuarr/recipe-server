@@ -12,9 +12,11 @@ import { RefreshAccessToken } from "../controllers/tokenController";
 import { authorizeRoles } from "../middlewares/authorize.roles";
 import { isAuthenticated } from "../middlewares/protected.route";
 import { validateLogin, validateRegister } from "../utils/validation/auth";
-import { UpdateEmail, UpdateName, UpdatePassword } from "../controllers/User.controller";
+import { UpdateAvatarUser, UpdateEmail, UpdateName, UpdatePassword } from "../controllers/User.controller";
+import multer from "multer";
+import { fileFilter, fileStorage } from "../middlewares/multer";
 const router = express.Router();
-
+const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
 // auth routes
 router.post("/auth/login", validateLogin, Login);
 router.post("/auth/register", validateRegister, Register);
@@ -26,7 +28,7 @@ router.get("/admin/data", isAuthenticated, authorizeRoles(["ADMIN"]), (req, res)
   res.json({ message: "Hello Admin!" });
 });
 // recipe routes
-router.get("/recipes", GetRecipes);
+router.get("/recipes", upload.single("image"), GetRecipes);
 router.get("/recipes/:recipeName", GetRecipeByName);
 router.post("/recipes", CreateRecipe);
 router.put("/recipes/:id", UpdateRecipe);
@@ -36,9 +38,10 @@ router.delete("/recipes/:id", DeleteRecipe);
 router.put("/auth/profile/update-name", isAuthenticated, UpdateName);
 router.put("/auth/profile/update-email", isAuthenticated, UpdateEmail);
 router.put("/auth/profile/update-password", isAuthenticated, UpdatePassword);
+router.put("/auth/profile/upload-avatar", upload.single("avatar"), isAuthenticated, UpdateAvatarUser);
 
 //feature favorite
 router.post("/recipes/favorite/:recipeId/toggle", isAuthenticated, ToggleFavorite);
-router.get("/recipes/favorites", isAuthenticated, GetAllFavorite);
+router.get("/recipes/:userName/favorite", isAuthenticated, GetAllFavorite);
 
 export default router;
