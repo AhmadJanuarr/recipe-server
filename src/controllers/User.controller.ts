@@ -1,9 +1,11 @@
+import { UploadImageAvatarToSupabase } from "./../services/supabase.services";
 import { UserProps } from "./../types/user.d";
 import { Request, Response } from "express";
 import { prisma } from "../utils/prisma";
 import { validationResult } from "express-validator";
 import { CustomRequest } from "../types/payload";
 import { UpdateUserEmail, UpdateUserName, UpdateUserPassword } from "../services/users.services";
+import { Supabase } from "../config/supabase.config";
 import bcrypt from "bcrypt";
 
 export const UpdateName = async (req: CustomRequest, res: Response) => {
@@ -103,6 +105,74 @@ export const UpdatePassword = async (req: CustomRequest, res: Response) => {
   }
 };
 
+export const UpdateAvatarUser = async (req: CustomRequest, res: Response) => {
+  const { userId } = req.payload || {};
+
+  if (!userId) {
+    res.status(400).json({ success: false, message: "User tidak ditemukan" });
+    return;
+  }
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (user?.avatar) {
+    try {
+      //1. AMBIL DATA AVATAR DARI STORAGE
+      const { data: files, error: listError } = await Supabase.storage.from("avatars").list(`${userId}`);
+      if (listError) {
+        res.status(400).json({
+          success: false,
+          message: "Gagal mengambil list avatar lama",
+          msg: listError.message,
+        });
+      }
+      //2. TANGKAP PATH LENGKAPNYA
+      const pathsToDelete = files?.map((file) => `${userId}/${file.name}`) || [];
+
+      //3. CEK APAKAH PATHNYA TERDAPAT FILE ? HAPUS FILE SEMUANYA : TERJADI ERROR
+      if (pathsToDelete.length > 0) {
+        const { error: removeError } = await Supabase.storage.from("avatars").remove(pathsToDelete);
+
+        if (removeError) {
+          res.status(400).json({ success: false, message: "gagal menghapus avatar" });
+          return;
+        }
+      }
+
+      //4. KOSONGKAN AVATAR DI DALAM DATABASE
+      await prisma.user.update({
+        where: { id: userId },
+        data: { avatar: null },
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        success: false,
+        message: "Error saat menghapus avatar lama",
+        msg: error.message,
+      });
+    }
+  }
+
+  // UPLOAD FILE BARU KE STORAGE SUPABASE
+  const UploadAvatarToStorage = await UploadImageAvatarToSupabase(req.file!, userId);
+
+  try {
+    //UPDATE USER KHUSUS BAGIAN AVATAR
+    const updateAvatar = await prisma.user.update({
+      where: { id: userId },
+      data: { avatar: UploadAvatarToStorage || null },
+    });
+    res.status(200).json({
+      success: true,
+      message: "Berhasil mengubah avatar dan menghapus avatar sebelumnya",
+      data: updateAvatar,
+    });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: "Gagal mengubah avatar sama sekali", msg: error.message });
+  }
+};
+
 export const GetUsers = async (req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany();
@@ -152,31 +222,3 @@ export const CreateUser = async (req: Request, res: Response) => {
     });
   }
 };
-
-// export const ProtectedRouteUser = async (req: Request, res: Response): Promise<void> => {
-//     console.log(req.payload)
-//     try {
-//         const { userId } = (req as any).payload;
-//         const user = await FindUserById(userId);
-
-//       if (user) {
-//         const { password, ...userWithoutPassword } = user;
-//         res.status(200).json({
-//           success: true,
-//           message: "Berhasil mengambil user",
-//           data: userWithoutPassword,
-//         });
-//       } else {
-//         res.status(404).json({
-//           success: false,
-//           message: "User tidak ditemukan",
-//         });
-//       }
-//     } catch (error: any) {
-//       res.status(500).json({
-//         success: false,
-//         message: "Gagal mengambil user",
-//         error: error.message,
-//       });
-//     }
-//   };
