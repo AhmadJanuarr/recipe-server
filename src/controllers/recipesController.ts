@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { UploadImageToSupabase } from "../services/supabase.services";
+import { UploadImageRecipeToSupabase } from "../services/supabase.services";
 import { prisma } from "../utils/prisma";
 import { CustomRequest } from "../types/payload";
 
@@ -50,7 +50,15 @@ export const CreateRecipe = async (req: Request, res: Response) => {
   let imageUrl: string;
 
   try {
-    imageUrl = await UploadImageToSupabase(req.file);
+    const uploadResult = await UploadImageRecipeToSupabase(req.file);
+    if (!uploadResult) {
+      res.status(500).json({
+        success: false,
+        message: "Gagal mengunggah gambar resep",
+      });
+      return;
+    }
+    imageUrl = uploadResult;
     ingredients = JSON.parse(req.body.ingredients);
     steps = JSON.parse(req.body.steps);
   } catch (error: any) {
@@ -132,12 +140,15 @@ export const UpdateRecipe = async (req: Request, res: Response) => {
   try {
     let imageUrl: string | undefined;
     if (req.file) {
-      imageUrl = await UploadImageToSupabase(req.file);
-      res.status(422).json({
-        success: false,
-        message: "Gambar resep harus diisi",
-      });
-      return;
+      const uploadResult = await UploadImageRecipeToSupabase(req.file);
+      if (!uploadResult) {
+        res.status(500).json({
+          success: false,
+          message: "Gagal mengunggah gambar resep",
+        });
+        return;
+      }
+      imageUrl = uploadResult;
     }
     const nutritionData = {
       calories: parseInt(calories),
