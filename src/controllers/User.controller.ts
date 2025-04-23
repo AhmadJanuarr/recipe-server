@@ -155,11 +155,16 @@ export const UpdateAvatarUser = async (req: CustomRequest, res: Response) => {
   // UPLOAD FILE BARU KE STORAGE SUPABASE
   const UploadAvatarToStorage = await UploadImageAvatarToSupabase(req.file!, userId);
 
+  if (!UploadAvatarToStorage) {
+    res.status(400).json({ success: false, message: "Gagal mengunggah avatar baru - kesalahan dari supabase" });
+    return;
+  }
+
   try {
     //UPDATE USER KHUSUS BAGIAN AVATAR
     const updateAvatar = await prisma.user.update({
       where: { id: userId },
-      data: { avatar: UploadAvatarToStorage || null },
+      data: { avatar: UploadAvatarToStorage },
     });
     res.status(200).json({
       success: true,
