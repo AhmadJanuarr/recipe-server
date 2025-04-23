@@ -94,7 +94,6 @@ export const Register = async (req: Request, res: Response): Promise<void> => {
     });
     return;
   } catch (error) {
-    console.error("Signup error:", error);
     res.status(500).json({
       success: false,
       message: "Kesalahan Server Internal",
