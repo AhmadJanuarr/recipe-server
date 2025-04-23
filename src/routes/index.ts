@@ -12,9 +12,10 @@ import { RefreshAccessToken } from "../controllers/tokenController";
 import { authorizeRoles } from "../middlewares/authorize.roles";
 import { isAuthenticated } from "../middlewares/protected.route";
 import { validateLogin, validateRegister } from "../utils/validation/auth";
-import { UpdateAvatarUser, UpdateEmail, UpdateName, UpdatePassword } from "../controllers/User.controller";
-import multer from "multer";
+import { DeleteUser, UpdateAvatarUser, UpdateEmail, UpdateName, UpdatePassword } from "../controllers/User.controller";
 import { fileFilter, fileStorage } from "../middlewares/multer";
+import multer from "multer";
+
 const router = express.Router();
 const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
 // auth routes
@@ -39,6 +40,7 @@ router.put("/auth/profile/update-name", isAuthenticated, UpdateName);
 router.put("/auth/profile/update-email", isAuthenticated, UpdateEmail);
 router.put("/auth/profile/update-password", isAuthenticated, UpdatePassword);
 router.put("/auth/profile/upload-avatar", upload.single("avatar"), isAuthenticated, UpdateAvatarUser);
+router.delete("/auth/profile/delete-user", isAuthenticated, DeleteUser);
 
 //feature favorite
 router.post("/recipes/favorite/:recipeId/toggle", isAuthenticated, ToggleFavorite);
