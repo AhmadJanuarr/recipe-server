@@ -8,32 +8,15 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
-enum Category {
-  Makanan_Berat
-  Makanan_Ringan
-  Kue
-}
-
-enum Difficulty {
-  Mudah
-  Sedang
-  Sulit
-}
-
 model User {
   id           Int            @id @default(autoincrement())
   name         String         @db.VarChar(255)
   email        String         @unique
   password     String
   role         Role           @default(USER)
-  avatar       String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+  avatar       String?
   favorite     Favorite[]
   recipes      Recipe[]
   RefreshToken RefreshToken[]
@@ -43,18 +26,18 @@ model Recipe {
   id          Int          @id @default(autoincrement())
   title       String       @db.VarChar(255)
   description String
-  ingredients Ingredient[]
-  steps       Steps[]
-  favorite    Favorite[]
   tips        String?
   image       String?
   difficulty  Difficulty
-  nutrition   Nutrition?
   category    Category
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  user        User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int?
+  favorite    Favorite[]
+  ingredients Ingredient[]
+  nutrition   Nutrition?
+  user        User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  steps       Steps[]
 }
 
 model Ingredient {
@@ -75,8 +58,8 @@ model Favorite {
   id       Int    @id @default(autoincrement())
   userId   Int
   recipeId Int
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, recipeId])
 }
@@ -95,9 +78,26 @@ model RefreshToken {
   id        Int      @id @default(autoincrement())
   hashToken String   @unique
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   revoked   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Category {
+  Makanan_Berat
+  Makanan_Ringan
+  Kue
+}
+
+enum Difficulty {
+  Mudah
+  Sedang
+  Sulit
 }
