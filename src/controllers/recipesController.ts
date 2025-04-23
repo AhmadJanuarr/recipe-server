@@ -221,7 +221,7 @@ export const DeleteRecipe = async (req: Request, res: Response) => {
 export const GetRecipeByName = async (req: Request, res: Response) => {
   const { recipeName } = req.params;
   try {
-    const byName = await prisma.recipe.findFirst({
+    const recipesByName = await prisma.recipe.findFirst({
       where: {
         title: {
           equals: recipeName,
@@ -231,9 +231,15 @@ export const GetRecipeByName = async (req: Request, res: Response) => {
         ingredients: true,
         steps: true,
         nutrition: true,
+        favorite: true,
       },
     });
-    if (!byName) {
+
+    const RecipeWithNewFeature = recipesByName
+      ? { isFavorite: recipesByName.favorite.length > 0, ...recipesByName }
+      : null;
+
+    if (!RecipeWithNewFeature) {
       res.status(404).json({
         success: false,
         message: "Resep tidak ditemukan",
@@ -242,8 +248,8 @@ export const GetRecipeByName = async (req: Request, res: Response) => {
     }
     res.status(200).json({
       success: true,
-      message: "Resep berhasil ditemukan",
-      data: byName,
+      message: "Berhasil mengambil resep berdasarkan nama",
+      data: RecipeWithNewFeature,
     });
   } catch (error: any) {
     res.status(500).json({
