@@ -1,11 +1,6 @@
+import { UserProps } from "../types/user";
 import { prisma } from "../utils/prisma";
 import bcrypt from "bcrypt";
-
-type UserProps = {
-  name: string;
-  email: string;
-  password: string;
-};
 
 export const FindUserByEmail = (email: string) => {
   return prisma.user.findUnique({
@@ -20,10 +15,15 @@ export const FindUserById = (id: number) => {
 };
 
 export const CreateUserByEmailAndPassword = (user: UserProps) => {
-  user.password = bcrypt.hashSync(user.password, 10);
+  if (user.password) {
+    user.password = bcrypt.hashSync(user.password, 10);
+  } else {
+    throw new Error("Password is required");
+  }
   return prisma.user.create({
     data: {
       ...user,
+      password: user.password as string,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
