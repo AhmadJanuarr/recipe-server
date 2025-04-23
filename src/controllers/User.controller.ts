@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import { prisma } from "../utils/prisma";
 import { validationResult } from "express-validator";
 import { CustomRequest } from "../types/payload";
-import { UpdateUserEmail, UpdateUserName, UpdateUserPassword } from "../services/users.services";
+import { FindUserById, UpdateUserEmail, UpdateUserName, UpdateUserPassword } from "../services/users.services";
 import { Supabase } from "../config/supabase.config";
 import bcrypt from "bcrypt";
 
@@ -112,9 +112,7 @@ export const UpdateAvatarUser = async (req: CustomRequest, res: Response) => {
     res.status(400).json({ success: false, message: "User tidak ditemukan" });
     return;
   }
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  });
+  const user = await FindUserById(userId);
 
   if (user?.avatar) {
     try {
@@ -170,6 +168,61 @@ export const UpdateAvatarUser = async (req: CustomRequest, res: Response) => {
     });
   } catch (error: any) {
     res.status(400).json({ success: false, message: "Gagal mengubah avatar sama sekali", msg: error.message });
+  }
+};
+
+export const DeleteUser = async (req: CustomRequest, res: Response) => {
+  const { userId } = req.payload || {};
+  if (!userId) {
+    res.status(400).json({ success: false, message: "User tidak ditemukan" });
+    return;
+  }
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (user) {
+      const { data: files, error: ListError } = await Supabase.storage.from("avatars").list(`${userId}`);
+      if (ListError) {
+        res.status(400).json({
+          success: false,
+          message: "Gagal mengambil list avatar lama",
+          msg: ListError.message,
+        });
+        return;
+      }
+      const pathsToDelete = files?.map((file) => `${userId}/${file.name}`) || [];
+
+      if (pathsToDelete.length > 0) {
+        const { error: removeError } = await Supabase.storage.from("avatars").remove(pathsToDelete);
+        if (removeError) {
+          res.status(400).json({
+            success: false,
+            message: "Gagal menghapus avatar",
+            error: removeError.message,
+          });
+          return;
+        }
+
+        await prisma.user.update({
+          where: { id: userId },
+          data: { avatar: null },
+        });
+
+        await prisma.user.delete({
+          where: { id: userId },
+        });
+      }
+      res.status(200).json({
+        success: true,
+        message: "Akun berhasil dihapus",
+      });
+      return;
+    }
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: "Gagal menghapus user", msg: error.message });
+    return;
   }
 };
 
