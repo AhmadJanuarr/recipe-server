@@ -1,11 +1,9 @@
-import { fileFilter, fileStorage } from "./middlewares/multer";
-import express from "express";
-import dotenv from "dotenv";
-import usersRoute from "./routes";
 import bodyParser from "body-parser";
-import cors from "cors";
 import cookieParser from "cookie-parser";
-import multer from "multer";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import usersRoute from "./routes";
 
 dotenv.config();
 
