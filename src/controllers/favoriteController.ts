@@ -54,8 +54,6 @@ export const GetAllFavorite = async (req: CustomRequest, res: Response) => {
   const { userId } = req.payload || {};
   const { userName } = req.params;
 
-  console.log(userId, userName);
-
   if (!userId) {
     res.status(401).json({
       success: false,
