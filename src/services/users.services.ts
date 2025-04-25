@@ -23,6 +23,7 @@ export const CreateUserByEmailAndPassword = (user: UserProps) => {
   return prisma.user.create({
     data: {
       ...user,
+      avatar: user.avatar ?? " ",
       password: user.password as string,
       createdAt: new Date(),
       updatedAt: new Date(),
