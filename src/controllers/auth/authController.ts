@@ -90,7 +90,6 @@ export const Register = async (req: Request, res: Response): Promise<void> => {
       message: "User berhasil dibuat",
       data: {
         ...userWithoutPassword,
-        avatar: user.avatar ?? null,
       },
       accessToken,
       refreshToken,
