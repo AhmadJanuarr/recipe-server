@@ -8,5 +8,13 @@
   ],
   "routes": [
     { "src": "/(.*)", "dest": "src/index.ts" }
-  ]
+  ],
+  "build": {
+    "env": {
+      "DATABASE_URL": "@database-url"
+    },
+    "commands": [
+      "npx prisma generate"
+    ]
+  }
 }
