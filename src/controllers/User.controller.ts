@@ -141,7 +141,7 @@ export const UpdateAvatarUser = async (req: CustomRequest, res: Response) => {
       //4. KOSONGKAN AVATAR DI DALAM DATABASE
       await prisma.user.update({
         where: { id: userId },
-        data: { avatar: null },
+        data: { avatar: "" },
       });
     } catch (error: any) {
       res.status(400).json({
@@ -212,7 +212,7 @@ export const DeleteUser = async (req: CustomRequest, res: Response) => {
 
         await prisma.user.update({
           where: { id: userId },
-          data: { avatar: null },
+          data: { avatar: "" },
         });
 
         await prisma.user.delete({
@@ -243,39 +243,6 @@ export const GetUsers = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Gagal mengambil user",
-      msg: error.message,
-    });
-  }
-};
-
-export const CreateUser = async (req: Request, res: Response) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({
-      success: false,
-      message: "Validations errors",
-      errors: errors.array(),
-    });
-  }
-  const hashPassword = await bcrypt.hash(req.body.password, 10);
-  try {
-    const user: UserProps = await prisma.user.create({
-      data: {
-        name: req.body.name,
-        email: req.body.email,
-        password: hashPassword,
-        updatedAt: new Date(),
-      },
-    });
-    res.status(201).json({
-      success: true,
-      message: "Berhasil membuat user",
-      data: user,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Gagal membuat user",
       msg: error.message,
     });
   }
