@@ -18,5 +18,10 @@ export const UploadImageAvatarToSupabase = async (file: Express.Multer.File, use
   if (error) {
     throw new Error(error.message);
   }
-  return `${process.env.SUPABASE_URL}/storage/v1/object/public/avatars/${userId}/${fileName}`;
+  const supabaseUrl = process.env.SUPABASE_URL;
+  if (!supabaseUrl) {
+    console.warn("SUPABASE_URL is not defined");
+    return null;
+  }
+  return `${supabaseUrl}/storage/v1/object/public/avatars/${userId}/${fileName}`;
 };
