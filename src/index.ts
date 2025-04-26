@@ -36,8 +36,8 @@ app.use((req, res) => {
     message: "Not Found 🤷‍♂️",
   });
 });
-// app.listen(process.env.PORT, () => {
-//   console.log(`Server is running on http://localhost:${process.env.PORT}`);
-// });
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running on http://localhost:${process.env.PORT}`);
+});
 
 export default app;
