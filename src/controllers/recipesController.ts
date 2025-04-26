@@ -38,6 +38,7 @@ export const GetRecipes = async (req: CustomRequest, res: Response) => {
 
 export const CreateRecipe = async (req: Request, res: Response) => {
   const { title, description, category, calories, protein, fat, carbs, tips, difficulty } = req.body;
+
   if (!req.file) {
     res.status(422).json({
       success: false,
@@ -45,8 +46,9 @@ export const CreateRecipe = async (req: Request, res: Response) => {
     });
     return;
   }
-  let ingredients: string[] = [];
-  let steps: string[] = [];
+
+  let ingredients: { name: string }[] = [];
+  let steps: { description: string }[] = [];
   let imageUrl: string;
 
   try {
@@ -59,16 +61,18 @@ export const CreateRecipe = async (req: Request, res: Response) => {
       return;
     }
     imageUrl = uploadResult;
+
     ingredients = JSON.parse(req.body.ingredients);
     steps = JSON.parse(req.body.steps);
   } catch (error: any) {
-    res.status(500).json({
+    res.status(400).json({
       success: false,
-      message: "Ingredients dan steps harus berupa array valid.",
+      message: "Ingredients dan steps harus berupa array valid",
       data: error.message,
     });
     return;
   }
+
   const nutritionData = {
     calories: parseInt(calories),
     protein: parseFloat(protein),
@@ -89,10 +93,10 @@ export const CreateRecipe = async (req: Request, res: Response) => {
     return;
   }
 
-  if (!title || !description || !ingredients || !steps || !category || !nutritionData) {
+  if (!title || !description || !category || !difficulty) {
     res.status(400).json({
       success: false,
-      message: "Semua field harus diisi yah",
+      message: "Semua field wajib diisi",
     });
     return;
   }
@@ -109,20 +113,29 @@ export const CreateRecipe = async (req: Request, res: Response) => {
         nutrition: {
           create: nutritionData,
         },
-        ingredients: { create: ingredients.map((ingredient: string) => ({ name: ingredient })) },
-        steps: { create: steps.map((step: string) => ({ description: step })) },
+        ingredients: {
+          create: ingredients.map((ingredient) => ({
+            name: ingredient.name,
+          })),
+        },
+        steps: {
+          create: steps.map((step) => ({
+            description: step.description,
+          })),
+        },
       },
       include: {
         ingredients: true,
         steps: true,
       },
     });
-
+    console.log(newRecipe);
     res.status(201).json({
       success: true,
       message: "Resep berhasil dibuat",
       data: newRecipe,
     });
+    return;
   } catch (error: any) {
     res.status(500).json({
       success: false,
