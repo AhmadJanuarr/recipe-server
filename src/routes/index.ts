@@ -15,6 +15,7 @@ import { validateLogin, validateRegister } from "../utils/validation/auth";
 import { DeleteUser, UpdateAvatarUser, UpdateEmail, UpdateName, UpdatePassword } from "../controllers/User.controller";
 import { fileFilter, fileStorage } from "../middlewares/multer";
 import multer from "multer";
+import { ContactController } from "../controllers/contactController";
 
 const router = express.Router();
 const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
@@ -41,6 +42,7 @@ router.put("/auth/profile/update-email", isAuthenticated, UpdateEmail);
 router.put("/auth/profile/update-password", isAuthenticated, UpdatePassword);
 router.put("/auth/profile/upload-avatar", upload.single("avatar"), isAuthenticated, UpdateAvatarUser);
 router.delete("/auth/profile/delete-user", isAuthenticated, DeleteUser);
+router.post("/email/send", ContactController);
 
 //feature favorite
 router.post("/recipes/favorite/:recipeId/toggle", isAuthenticated, ToggleFavorite);
